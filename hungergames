@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hunger Games Survival</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; }
+        canvas { background: #000; display: block; margin: auto; }
+    </style>
+</head>
+<body>
+    <h1>Hunger Games Survival</h1>
+    <p>Collect food and avoid enemies to survive!</p>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        
+        let player = { x: 400, y: 300, size: 20, speed: 5 };
+        let food = { x: Math.random() * 780, y: Math.random() * 580, size: 10 };
+        let enemies = [{ x: 100, y: 100, size: 20, speed: 2 }];
+        let score = 0;
+        let gameOver = false;
+
+        function drawPlayer() {
+            ctx.fillStyle = "green";
+            ctx.fillRect(player.x, player.y, player.size, player.size);
+        }
+
+        function drawFood() {
+            ctx.fillStyle = "yellow";
+            ctx.fillRect(food.x, food.y, food.size, food.size);
+        }
+
+        function drawEnemies() {
+            ctx.fillStyle = "red";
+            enemies.forEach(enemy => {
+                ctx.fillRect(enemy.x, enemy.y, enemy.size, enemy.size);
+            });
+        }
+
+        function moveEnemies() {
+            enemies.forEach(enemy => {
+                let dx = player.x - enemy.x;
+                let dy = player.y - enemy.y;
+                let dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist > 0) {
+                    enemy.x += (dx / dist) * enemy.speed;
+                    enemy.y += (dy / dist) * enemy.speed;
+                }
+            });
+        }
+
+        function detectCollisions() {
+            if (Math.abs(player.x - food.x) < 20 && Math.abs(player.y - food.y) < 20) {
+                score++;
+                food.x = Math.random() * 780;
+                food.y = Math.random() * 580;
+                enemies.push({ x: Math.random() * 800, y: Math.random() * 600, size: 20, speed: 2 + score * 0.2 });
+            }
+            enemies.forEach(enemy => {
+                if (Math.abs(player.x - enemy.x) < 20 && Math.abs(player.y - enemy.y) < 20) {
+                    gameOver = true;
+                }
+            });
+        }
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "ArrowUp") player.y -= player.speed;
+            if (event.key === "ArrowDown") player.y += player.speed;
+            if (event.key === "ArrowLeft") player.x -= player.speed;
+            if (event.key === "ArrowRight") player.x += player.speed;
+        });
+
+        function gameLoop() {
+            if (gameOver) {
+                ctx.fillStyle = "white";
+                ctx.font = "30px Arial";
+                ctx.fillText("Game Over! Score: " + score, 250, 300);
+                return;
+            }
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawPlayer();
+            drawFood();
+            drawEnemies();
+            moveEnemies();
+            detectCollisions();
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>
