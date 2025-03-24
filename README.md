@@ -1,4 +1,6 @@
 <!DOCTYPE HTML>
+<html lang="en">
+<meta id="description" content="come with me as I learn to code">
 <main>
   <body>
     <h1>The Beginning: Months 1-3</h1>
